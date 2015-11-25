@@ -1,3 +1,10 @@
+# Project specific
+run/*.key
+run/*.sqlite3
+run/*.oog
+#run/static/
+#run/media/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
