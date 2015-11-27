@@ -6,8 +6,7 @@ from common import *
 
 DEBUG = True
 
-sys.path.append(normpath(join(PROJECT_ROOT, 'apps')))
-
+PRODUCT_API_AUTH = 'norman.harman'
 
 DATABASES['default'] = {
     'ENGINE': 'django.db.backends.sqlite3',

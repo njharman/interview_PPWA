@@ -1,0 +1,22 @@
+{% extends "ppwa/ppwa.html" %}
+
+{% block title %}{{ product.name }}{% endblock %}
+{% block description %}{{ product.name }}{% endblock %}
+
+{% block header %}
+  <h2>{{ product.name }}</h2>
+{% endblock %}
+
+{% block left %}
+  <div class="product_description">
+  {{ product.description|safe }}
+  </div>
+{% endblock %}
+{% block right %}
+  <div class="call_to_action">
+    Only <span class="price">${{ product.price }}</span>
+  </div>
+  {% if product.inventory %}
+    <a class="button button-primary" href="{% url 'product-detail' uuid=product.uuid %}">Purchase Now</a>
+  {% endif %}
+{% endblock %}

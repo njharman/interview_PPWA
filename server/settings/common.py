@@ -8,10 +8,12 @@ from os.path import abspath, basename, dirname, join, normpath
 DEBUG = False
 
 ADMINS = (
-    ('your name', 'your_name@example.com'),
+    ('Norman Harman', 'njharman@gmail.com'),
     )
 MANAGERS = ADMINS
 
+PRODUCT_API_URL = 'https://careers.undercovertourist.com/assignment/1/products/'
+PRODUCT_API_AUTH = 'first.last'
 
 SITE_ID = 1
 SITE_NAME = 'server'

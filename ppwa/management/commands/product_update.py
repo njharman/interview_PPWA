@@ -5,6 +5,7 @@ import logging
 import datetime
 from django.core.management.base import BaseCommand, CommandError
 from django import db
+from django.conf import settings
 
 import pytz
 import requests
@@ -18,8 +19,8 @@ class Command(BaseCommand):
     help = '''Update local product list from product API.'''
 
     def add_arguments(self, parser):
-        parser.add_argument('--auth', help='first.last', default=os.environ.get('PPWA_AUTH', None))
-        parser.add_argument('--url', help='''Product list API URL.''', default='https://careers.undercovertourist.com/assignment/1/products/')
+        parser.add_argument('--auth', help='first.last', default=os.environ.get('PPWA_AUTH', settings.PRODUCT_API_AUTH))
+        parser.add_argument('--url', help='''Product list API URL.''', default=settings.PRODUCT_API_URL)
 
     def handle(self, *args, **options):
         if options['auth'] is None:
@@ -71,9 +72,14 @@ class Command(BaseCommand):
         for data in products:
             try:
                 product = Product.objects.get(uuid=data['uuid'])
+                # API is source of truth. If we differ, we are wrong.
+                if product.id != data['id']:
+                    product.delete()
+                    raise Product.DoesNotExist
                 updated += 1
             except Product.DoesNotExist:
                 product = Product(uuid=data['uuid'])
+                product.id = data['id']
                 new += 1
             product.name = data['name']
             product.slug = data['slug']

@@ -1,0 +1,40 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}Programming Assignment{% endblock %}></title>
+  <meta name="description" content="{% block description %}Interview Programming test.{% endblock %}">
+  <meta name="author" content="Norman J. Harman Jr. njharman@gmail.com">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+  <link rel="icon" type="image/png" href="{% static "images/favicon.png" %}">
+  <link rel="stylesheet" href="{% static "css/normalize.css" %}">
+  <link rel="stylesheet" href="{% static "css/skeleton.css" %}">
+  {% block extra_style %}{% endblock %}
+</head>
+<body>
+  <div class="container">
+  {% block page %}
+    <div class="row">
+      <div class="twelve column" style="margin-top: 10%">
+      {% block header %}{% endblock %}
+      </div>
+    </div>
+    <div class="row">
+      {% block content %}
+      <div class="two-thirds column" style="margin-top: 10%">
+      {% block left %}{% endblock %}
+      </div>
+      <div class="one-third column" style="margin-top: 10%">
+      {% block right %}{% endblock %}
+      </div>
+      {% endblock %}
+    </div>
+    <div class="row">
+      {% block footer %}{% endblock %}
+    </div>
+  {% endblock %}
+  </div>
+</body>
+</html>
