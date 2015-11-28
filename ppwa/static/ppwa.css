@@ -1,0 +1,23 @@
+.call_to_action {
+  font-size: 2.4rem; line-height: 1.35; letter-spacing: -.08rem; 
+}
+.price {
+  color: #AA2222;
+}
+.quantity {
+  font-size: 1.5rem; line-height: 1.6;  letter-spacing: 0;
+  margin: 2px;
+}
+.button {
+  margin: 2px;
+}
+#quantity_input {
+  width: 2.0rem;
+}
+.dimmed {
+  color: #AAAAAA;
+}
+.errorlist {
+  font-size: 1.5rem; line-height: 1.6;  letter-spacing: 0;
+  color: #FF2222;
+}

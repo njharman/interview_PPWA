@@ -93,11 +93,11 @@ LOGGING = {
             },
         },
     'loggers': {
-        'wwpa': {
+        'ppwa': {
             'handlers': ['console'],
             'level': 'INFO',
             },
-        'wwpa.command': {
+        'ppwa.command': {
             'level': 'DEBUG',
             'propagate': True,
             },

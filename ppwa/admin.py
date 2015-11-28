@@ -5,7 +5,7 @@ from .models import Product, Customer, Order
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('slug', 'uuid', 'date_updated', 'is_active', )
+    list_display = ('id', 'slug', 'uuid', 'date_updated', 'is_active', )
     list_filter = ('is_active', )
     date_hierarchy = 'date_updated'
     search_fields = ['uuid', 'name', ]

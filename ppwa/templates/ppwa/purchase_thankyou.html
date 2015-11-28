@@ -1,0 +1,14 @@
+{% extends "ppwa/ppwa.html" %}
+
+{% block title %}Thank You{% endblock %}
+
+{% block left %}
+{% if purchase %}
+  <h2>Thank You</h2>
+  <p>Your purchase of {{ quantity }}x {{ name }} is complete.</p>
+  <p>Confirmation code: {{ confirmation }}</p>
+{% else %}
+  <h2>Sorry</h2>
+  <p>There was a problem with your purchase. Please try again later.</p>
+{% endif %}
+{% endblock %}

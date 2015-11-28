@@ -6,7 +6,7 @@ Employment application programming assignment.
 
 Project Architecture
 ====================
-Project consists of two services; user facing WebGUI, backend data updater:
+Project consists of two services; user facing WebGUI, back end data updater:
 
 | User -> WebGUI <-> ProductAPI
 |               \<-> Persistent Store
@@ -28,8 +28,6 @@ WebGUI
 Displays product data to user. Receives product purchase requests from user.
 Proxies purchases to ProductAPI and locally stores purchase information.
 
-Django
-
 
 Persistent Store
 ----------------
@@ -44,10 +42,10 @@ Product Updater
 Pulls product data from ProductAPI and stuffs it into Persistent Store.
 "Buffering" the latency and downtime of Product List API call
 
-Due to regular periodic schedule of product updates (1/mo) the simpleist
-system is cron job. For other use cases a full blown asynchronous task
-queue/runner might be needed. Such as http://python-rq.org/ or
-http://www.celeryproject.org/
+Due to regular periodic schedule of product updates (1/mo) the simplest system
+is cron job "manage.py product_update". For other use cases a full blown
+asynchronous task queue/runner might be needed. Such as http://python-rq.org/
+or http://www.celeryproject.org/
 
 
 Data Schema
@@ -57,15 +55,19 @@ Data Schema
 Product
 -------
 From product list API call.
-  - Product ID         ; Foreign (assigned by API).
-  - <details>
+  - Product ID         ; Assigned by API.
+  - name
+  - slug
+  - uuid
+  - is_active          ; Products seen in most recent update.
+  - date_updated       ; Timestamp product was updated from API.
 
 
 Order
 -----
-  - Order ID
-  - FK_Customer
-  - FK_Product ID
+  - Order ID            ; Local id.
+  - FK_Customer         ; Foriegn Key to Customer table.
+  - FK_Product ID       ; Foriegn Key to Product table.
   - Product Name
   - Product Price
   - Quantity Ordered
@@ -74,7 +76,7 @@ Order
 
 Customer
 --------
-  - Customer ID
+  - Customer ID         ; Local id.
   - Name
   - Email Address
   - Phone Number
@@ -83,6 +85,17 @@ Customer
 
 Directory Structure
 ===================
+./requirements.txt
+  pip install -r requirements.txt
+
+./run/
+  place to put test/dev SQLite db, static files, log files, etc.
+
+./server/
+  stub to provide place to run ppwa Django app
+
+./ppwa/
+  Django app implementing assignment
 
 
 Assignment

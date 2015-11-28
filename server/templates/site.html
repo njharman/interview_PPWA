@@ -11,7 +11,7 @@
   <link rel="icon" type="image/png" href="{% static "images/favicon.png" %}">
   <link rel="stylesheet" href="{% static "css/normalize.css" %}">
   <link rel="stylesheet" href="{% static "css/skeleton.css" %}">
-  {% block extra_style %}{% endblock %}
+  {% block extra_head %}{% endblock %}
 </head>
 <body>
   <div class="container">
@@ -37,4 +37,5 @@
   {% endblock %}
   </div>
 </body>
+{% block javascript %}{% endblock %}
 </html>

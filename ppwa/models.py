@@ -1,10 +1,12 @@
+import datetime
 import logging
 
+import pytz
 from django.db import models
 
 from . import api
 
-logger = logging.getLogger('wwpa.model')
+logger = logging.getLogger('ppwa.model')
 
 
 class Product(models.Model):
@@ -20,11 +22,12 @@ class Product(models.Model):
     @property
     def _detail(self):
         '''Dynamically pull detail info from product API.'''
-        if not hasattr(self, '__detail'):
+        # TODO: API/JSON/Network exceptions are an issue.
+        if not hasattr(self, '_detail_cache'):
             # TODO: This latency / dependency sucks. Want current data. Assumption
-            # that lifetime of this object is current enough.
-            self.__detail = api.product_detail(self.id)
-        return self.__detail
+            # that lifetime of Product instance is current enough.
+            self._detail_cache = api.product_detail(self.id)
+        return self._detail_cache
 
     @property
     def price(self):
@@ -38,11 +41,19 @@ class Product(models.Model):
     def inventory(self):
         return self._detail['inventory_on_hand']
 
+    @staticmethod  # Cause it's convinient to have this on Product.
+    def utcnow():
+        '''Python in its invinate wisdom does not add TZ to utcnow()'''
+        return datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
+
 
 class Customer(models.Model):
     name = models.CharField(max_length=100)
     phone = models.CharField(max_length=25)
     email = models.EmailField()
+
+    class Meta:
+        unique_together = (('name', 'phone', 'email'), )
 
     def __unicode__(self):
         return self.name
@@ -50,6 +61,7 @@ class Customer(models.Model):
 
 class Order(models.Model):
     customer = models.ForeignKey(Customer)
+    # TODO: Link by uuid, cause update_products may change pk.
     product = models.ForeignKey(Product)
     product_name = models.CharField(max_length=255)  # TODO: listed requirment, denormal with Product.name?
     price = models.DecimalField(max_digits=10, decimal_places=2, help_text='''Price at time of purchase.''')
@@ -57,4 +69,4 @@ class Order(models.Model):
     confirmation = models.CharField(max_length=255, help_text='''Confirmation code from purchase API.''')
 
     def __unicode__(self):
-        return '%ix %s' % (self.quantity, self.product)
+        return '%ix %s' % (self.quantity, self.product_name)

@@ -2,17 +2,15 @@ from __future__ import print_function
 
 import os
 import logging
-import datetime
+
 from django.core.management.base import BaseCommand, CommandError
 from django import db
 from django.conf import settings
 
-import pytz
-import requests
-
 from ...models import Product
+from ... import api
 
-logger = logging.getLogger('wwpa.command')
+logger = logging.getLogger('ppwa.command')
 
 
 class Command(BaseCommand):
@@ -37,12 +35,8 @@ class Command(BaseCommand):
         :param url: URL of product listing API.
         :return: list of dictionaries {id, uuid, slug, name}.
         '''
-        response = requests.get(url, headers={'X-AUTH': auth})
-        logger.info('Got HTTP%s from %s' % (response.status_code, url))
-        if response.status_code != requests.codes.ok:
-            raise CommandError('''Got bad HTTP%s response''' % response.status_code)
         try:
-            data = response.json()
+            data = api.product_list()
             if 'results' not in data or 'count' not in data:
                 logger.debug(str(data))
                 raise ValueError('''Malformed JSON''')
@@ -51,6 +45,8 @@ class Command(BaseCommand):
         except ValueError as e:
             logger.error(e)
             raise CommandError(e)
+        except api.HTTPError as e:
+            raise CommandError('''HTTP error: %s''' % e)
 
     @db.transaction.atomic
     def _persist_product_list(self, products):
@@ -66,7 +62,7 @@ class Command(BaseCommand):
         :return: (new products added, existing products updated, existing products no longer available)
         '''
         # Reads/writes O(n), reads could be O(1).
-        timestamp = datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
+        timestamp = Product.utcnow()
         new = 0
         updated = 0
         for data in products:

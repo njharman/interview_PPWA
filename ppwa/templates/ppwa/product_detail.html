@@ -3,6 +3,44 @@
 {% block title %}{{ product.name }}{% endblock %}
 {% block description %}{{ product.name }}{% endblock %}
 
+{% comment "TODO: Implement fall back for CDN hosted resources. See http://stackoverflow.com/questions/1014203/best-way-to-use-googles-hosted-jquery-but-fall-back-to-my-hosted-library-on-go" %}{% endcomment %}
+
+{% block extra_head %}
+  {{ block.super }}
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/redmond/jquery-ui.css" type="text/css" media="all" /> 
+{% endblock %}
+
+{% block javascript %}
+  {{ block.super }}
+{% comment "TODO: create custom jquery-ui with just components we need. See http://jqueryui.com/download/" %}{% endcomment %}
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" type="text/javascript"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js" type="text/javascript"></script>
+{% comment "TODO: Maybe put into .js file with versioned url and served long lived." %}{% endcomment %}
+  <script type="text/javascript">
+  $( "#quantity_input" ).spinner({
+    min: 1,
+    max: {{ product.inventory }}
+    });
+  $(".default-input").addClass("dimmed");
+  $(".default-input")
+    .focus(function() {
+      $(this).removeClass("dimmed");
+      if (this.value === $(this).attr("my_default")) {
+        this.value = "";
+        }
+      })
+    .blur(function() {
+      if (this.value === "") {
+        this.value = $(this).attr("my_default");
+        $(this).addClass("dimmed");
+        }
+      });
+  $("#name").attr("my_default", "your name").focus();
+  $("#phone").attr("my_default", "phone").focus();
+  $("#email").attr("my_default", "email").focus();
+  </script>
+{% endblock %}
+
 {% block header %}
   <h2>{{ product.name }}</h2>
 {% endblock %}
@@ -13,10 +51,28 @@
   </div>
 {% endblock %}
 {% block right %}
-  <div class="call_to_action">
-    Only <span class="price">${{ product.price }}</span>
-  </div>
   {% if product.inventory %}
-    <a class="button button-primary" href="{% url 'product-detail' uuid=product.uuid %}">Purchase Now</a>
+    <form action="{% url 'product-detail' uuid=product.uuid %}" method="post">
+    {% csrf_token %}
+    <div class="call_to_action">
+      <div>Only <span class="price">${{ product.price }}</span> per person</div>
+{% comment "TODO: Indication of total tickets available, esp when only 1." %}{% endcomment %}
+      {{ form.non_field_errors }}
+      {{ form.name.errors }}
+      <div><input id="name" name="name" class="default-input u-full-width" value="{{ form.name.value }}"></div>
+      {{ form.email.errors }}
+      <div><input id="email" name="email" class="default-input u-full-width" value="{{ form.email.value }}"></div>
+      {{ form.phone.errors }}
+      <div><input id="phone" name="phone" class="default-input u-full-width" value="{{ form.phone.value }}"></div>
+      <div class="quantity"><input id="quantity_input" name="quantity" value="1"> Tickets
+      <button class="button button-primary u-full-width">Purchase Now</a>
+      </div>
+    </div>
+    </form>
+  {% else %}
+    <div class="call_to_action">
+      Only <span class="price">${{ product.price }}</span>
+    </div>
+    <p id="no_inventory">Sorry, this package is currently sold out.</p>
   {% endif %}
 {% endblock %}
