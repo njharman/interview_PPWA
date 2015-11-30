@@ -3,6 +3,7 @@ from unittest import TestCase
 
 import pytz
 from django.test import TestCase as DJTestCase
+from django.db import IntegrityError
 
 
 from .models import Product, Customer, Order
@@ -71,7 +72,7 @@ class CustomerModelTestCase(DJTestCase):
         t1 = Customer(name='name', phone='phone', email='email')
         t1.save()
         t2 = Customer(name='name', phone='phone', email='email')
-        t2.save()
+        self.assertRaises(IntegrityError, t2.save)
 
 
 class OrderModelTestCase(DJTestCase):
